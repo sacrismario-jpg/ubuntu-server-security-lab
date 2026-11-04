@@ -1,0 +1,79 @@
+========================================
+       AUDITORÍA DE SEGURIDAD V4
+========================================
+Fecha: mié 04 nov 2026 09:53:19 UTC
+Servidor: ubuntu-server-lab
+
+=== 1. SISTEMA ===
+PRETTY_NAME="Ubuntu 26.04.1 LTS"
+VERSION_ID="26.04"
+7.0.0-30-generic
+
+=== 2. MEMORIA ===
+               total        used        free      shared  buff/cache   available
+Mem:           1,6Gi       365Mi       1,0Gi       5,0Mi       394Mi       1,2Gi
+Swap:          1,8Gi          0B       1,8Gi
+[INFO] Memoria disponible dentro de los umbrales: 22% utilizada.
+
+=== 3. ESPACIO EN DISCO ===
+Filesystem                         Size  Used Avail Use% Mounted on
+/dev/mapper/ubuntu--vg-ubuntu--lv  9,8G  4,8G  4,5G  52% /
+[INFO] Espacio en disco correcto: 52%.
+
+=== 4. RED Y RUTAS ===
+lo               UNKNOWN        127.0.0.1/8 ::1/128
+enp1s0           UP             192.168.50.10/24 fe80::5054:ff:fe01:e4fc/64
+192.168.50.0/24 dev enp1s0 proto kernel scope link src 192.168.50.10
+[INFO] No existe ruta IPv4 predeterminada.
+
+=== 5. CORTAFUEGOS ===
+Status: active
+Logging: on (low)
+Default: deny (incoming), allow (outgoing), disabled (routed)
+New profiles: skip
+
+To                         Action      From
+--                         ------      ----
+22/tcp                     ALLOW IN    192.168.50.1
+
+[INFO] UFW está activo.
+
+=== 6. PUERTOS EN ESCUCHA ===
+Netid State  Recv-Q Send-Q Local Address:Port Peer Address:PortProcess
+udp   UNCONN 0      0         127.0.0.54:53        0.0.0.0:*    users:(("systemd-resolve",pid=596,fd=18))
+udp   UNCONN 0      0      127.0.0.53%lo:53        0.0.0.0:*    users:(("systemd-resolve",pid=596,fd=16))
+udp   UNCONN 0      0          127.0.0.1:323       0.0.0.0:*    users:(("chronyd",pid=1066,fd=4))
+udp   UNCONN 0      0              [::1]:323          [::]:*    users:(("chronyd",pid=1066,fd=5))
+tcp   LISTEN 0      4096      127.0.0.54:53        0.0.0.0:*    users:(("systemd-resolve",pid=596,fd=19))
+tcp   LISTEN 0      4096         0.0.0.0:22        0.0.0.0:*    users:(("sshd",pid=1027,fd=3),("systemd",pid=1,fd=239))
+tcp   LISTEN 0      4096   127.0.0.53%lo:53        0.0.0.0:*    users:(("systemd-resolve",pid=596,fd=17))
+tcp   LISTEN 0      4096            [::]:22           [::]:*    users:(("sshd",pid=1027,fd=4),("systemd",pid=1,fd=240))
+[WARNING] SSH escucha en TCP/22. Revisar exposición y reglas UFW.
+[WARNING] Hay servicios TCP escuchando en todas las interfaces IPv4.
+
+=== 7. CONFIGURACIÓN SSH EFECTIVA ===
+permitrootlogin no
+pubkeyauthentication yes
+passwordauthentication no
+kbdinteractiveauthentication no
+[INFO] Autenticación SSH por contraseña deshabilitada.
+[INFO] Acceso SSH directo de root restringido.
+[INFO] Autenticación mediante clave pública habilitada.
+
+=== 8. CUENTAS CON UID 0 ===
+root
+[INFO] Solo existe la cuenta root con UID 0.
+
+=== 9. SERVICIOS FALLIDOS ===
+[INFO] No se detectan servicios fallidos.
+
+=== 10. ACTUALIZACIONES AUTOMÁTICAS ===
+[INFO] unattended-upgrades está habilitado.
+
+=== 11. RESUMEN DE SEGURIDAD ===
+CRITICAL: 0
+WARNING:  2
+INFO:     10
+
+Informe: /home/labadmin/auditorias/auditoria-v4-2026-11-04_09-53-19.txt
+Auditoría finalizada.

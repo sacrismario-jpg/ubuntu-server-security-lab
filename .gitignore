@@ -1,0 +1,25 @@
+# Claves y credenciales
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa
+id_ed25519
+.env
+.env.*
+
+# Archivos temporales y copias
+*.bak
+*.tmp
+*.swp
+*~
+
+# Entornos y cachés
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db

@@ -1,0 +1,8 @@
+<network connections='1'>
+  <name>lab-aislado</name>
+  <uuid>[REDACTADO]</uuid>
+  <bridge name='virbr-lab' stp='on' delay='0'/>
+  <mac address='[REDACTADA]'/>
+  <ip address='192.168.50.1' netmask='255.255.255.0'>
+  </ip>
+</network>

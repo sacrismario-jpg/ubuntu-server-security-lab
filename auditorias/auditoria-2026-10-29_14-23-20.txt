@@ -1,0 +1,63 @@
+========================================
+       AUDITORÍA DE SEGURIDAD V2
+========================================
+Fecha: jue 29 oct 2026 14:23:20 UTC
+Servidor: ubuntu-server-lab
+
+=== 1. SISTEMA OPERATIVO ===
+PRETTY_NAME="Ubuntu 26.04.1 LTS"
+VERSION_ID="26.04"
+
+=== 2. TIEMPO ENCENDIDO ===
+ 14:23:20 up 19 min,  2 users,  load average: 0,07, 0,10, 0,09
+
+=== 3. MEMORIA Y SWAP ===
+               total        used        free      shared  buff/cache   available
+Mem:           1,6Gi       359Mi       1,1Gi       5,0Mi       308Mi       1,3Gi
+Swap:          1,8Gi          0B       1,8Gi
+
+=== 4. ESPACIO EN DISCO ===
+Filesystem                         Size  Used Avail Use% Mounted on
+/dev/mapper/ubuntu--vg-ubuntu--lv  9,8G  4,8G  4,5G  52% /
+
+=== 5. RED Y RUTAS ===
+lo               UNKNOWN        127.0.0.1/8 ::1/128
+enp1s0           UP             192.168.50.10/24 fe80::5054:ff:fe01:e4fc/64
+192.168.50.0/24 dev enp1s0 proto kernel scope link src 192.168.50.10
+
+=== 6. DIAGNÓSTICO DE RED ===
+[INFO] No existe una ruta IPv4 predeterminada.
+
+=== 7. CORTAFUEGOS UFW ===
+Status: active
+Logging: on (low)
+Default: deny (incoming), allow (outgoing), disabled (routed)
+New profiles: skip
+
+To                         Action      From
+--                         ------      ----
+22/tcp                     ALLOW IN    192.168.50.1
+
+[OK] UFW está activo.
+
+=== 8. PUERTOS EN ESCUCHA ===
+Netid State  Recv-Q Send-Q Local Address:Port Peer Address:PortProcess
+udp   UNCONN 0      0         127.0.0.54:53        0.0.0.0:*    users:(("systemd-resolve",pid=594,fd=18))
+udp   UNCONN 0      0      127.0.0.53%lo:53        0.0.0.0:*    users:(("systemd-resolve",pid=594,fd=16))
+udp   UNCONN 0      0          127.0.0.1:323       0.0.0.0:*    users:(("chronyd",pid=1054,fd=4))
+udp   UNCONN 0      0              [::1]:323          [::]:*    users:(("chronyd",pid=1054,fd=5))
+tcp   LISTEN 0      4096         0.0.0.0:22        0.0.0.0:*    users:(("sshd",pid=1023,fd=3),("systemd",pid=1,fd=168))
+tcp   LISTEN 0      4096   127.0.0.53%lo:53        0.0.0.0:*    users:(("systemd-resolve",pid=594,fd=17))
+tcp   LISTEN 0      4096      127.0.0.54:53        0.0.0.0:*    users:(("systemd-resolve",pid=594,fd=19))
+tcp   LISTEN 0      4096            [::]:22           [::]:*    users:(("sshd",pid=1023,fd=4),("systemd",pid=1,fd=169))
+
+=== 9. SERVICIO SSH ===
+[INFO] El servicio SSH está activo.
+[INFO] openssh-server está instalado.
+
+=== 10. ACTUALIZACIONES AUTOMÁTICAS ===
+[INFO] unattended-upgrades está habilitado.
+
+=== 11. RESUMEN ===
+Informe guardado en: /home/labadmin/auditorias/auditoria-2026-10-29_14-23-20.txt
+Auditoría finalizada.

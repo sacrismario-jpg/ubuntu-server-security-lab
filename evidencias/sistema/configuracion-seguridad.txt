@@ -1,0 +1,47 @@
+========== SISTEMA ==========
+ Static hostname: ubuntu-server-lab
+       Icon name: computer-vm
+         Chassis: vm 🖴
+      Machine ID: [REDACTADO]
+         Boot ID: [REDACTADO]
+  Virtualization: kvm
+Operating System: Ubuntu 26.04.1 LTS
+          Kernel: Linux 7.0.0-30-generic
+    Architecture: x86-64
+ Hardware Vendor: QEMU
+  Hardware Model: Ubuntu 24.04 PC _Q35 + ICH9, 2009_
+Hardware Version: pc-q35-noble
+Firmware Version: 1.16.3-debian-1.16.3-2
+   Firmware Date: Tue 2014-04-01
+    Firmware Age: 12y 7month 4d
+
+========== RED ==========
+lo               UNKNOWN        127.0.0.1/8 ::1/128
+enp1s0           UP             192.168.50.10/24 fe80::5054:ff:fe01:e4fc/64
+192.168.50.0/24 dev enp1s0 proto kernel scope link src 192.168.50.10
+fe80::/64 dev enp1s0 proto kernel metric 256 pref medium
+
+========== UFW ==========
+Status: active
+Logging: on (low)
+Default: deny (incoming), allow (outgoing), disabled (routed)
+New profiles: skip
+
+To                         Action      From
+--                         ------      ----
+22/tcp                     ALLOW IN    192.168.50.1
+
+
+========== SSH ==========
+permitrootlogin no
+pubkeyauthentication yes
+passwordauthentication no
+kbdinteractiveauthentication no
+
+========== SERVICIOS FALLIDOS ==========
+  UNIT LOAD ACTIVE SUB DESCRIPTION
+
+0 loaded units listed.
+
+========== ACTUALIZACIONES ==========
+active
