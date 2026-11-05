@@ -1,82 +1,79 @@
-# Laboratorio Ubuntu Server: Administración y Seguridad
+# Ubuntu Server Security Lab
 
-## 1. Descripción del proyecto
+Laboratorio práctico de administración Linux, hardening de sistemas y seguridad de redes mediante virtualización KVM/QEMU.
 
-Laboratorio práctico de administración de sistemas Linux y seguridad de redes, construido mediante virtualización KVM/QEMU sobre Zorin OS.
+El proyecto consiste en desplegar un servidor Ubuntu, configurar una red virtual independiente, aplicar medidas de seguridad y desarrollar scripts Bash para automatizar auditorías del sistema.
 
-El objetivo es desplegar un servidor Ubuntu aislado, aplicar medidas básicas de hardening, restringir el acceso administrativo y desarrollar un script de auditoría que permita evaluar su configuración de seguridad.
+## 1. Objetivos
 
-El proyecto está orientado al aprendizaje práctico de administración Linux, seguridad de sistemas, redes y automatización.
+- Administrar un servidor Ubuntu desde terminal.
+- Diseñar una red virtual con acceso restringido.
+- Aplicar medidas de hardening en SSH.
+- Configurar y verificar un cortafuegos UFW.
+- Analizar servicios, puertos y rutas de red.
+- Automatizar comprobaciones de seguridad mediante Bash.
+- Generar informes técnicos reproducibles.
 
-## 2. Arquitectura del laboratorio
+## 2. Arquitectura
 
 ### Sistema anfitrión
-- Sistema operativo: Zorin OS 18.1.
-- Base: Ubuntu 24.04.
-- Hipervisor: KVM/QEMU.
-- Gestión de máquinas virtuales: libvirt y virt-manager.
+- Zorin OS 18.1.
+- Base Ubuntu 24.04.
+- KVM/QEMU.
+- libvirt y virt-manager.
 
 ### Máquina virtual
-- Nombre: ubuntu-server-lab.
+- Nombre: `ubuntu-server-lab`.
 - Sistema operativo: Ubuntu Server 26.04.1 LTS.
 - Kernel: 7.0.0-30-generic.
 - Arquitectura: x86-64.
-- Firmware virtual: QEMU.
+- Adaptador de red: VirtIO.
 
 ## 3. Diseño de red
 
-Se ha creado una red virtual independiente denominada `lab-aislado`.
+Se ha creado una red virtual denominada `lab-aislado`.
 
 | Parámetro | Configuración |
 |---|---|
 | Red virtual | lab-aislado |
 | Bridge | virbr-lab |
-| Dirección del anfitrión | 192.168.50.1/24 |
-| Dirección de la VM | 192.168.50.10/24 |
-| Interfaz de la VM | enp1s0 |
+| IP del anfitrión | 192.168.50.1/24 |
+| IP de la VM | 192.168.50.10/24 |
+| Interfaz | enp1s0 |
 | DHCP | Deshabilitado |
 | NAT / Forward | No configurado |
-| Inicio automático | Deshabilitado |
+| Gateway IPv4 | No configurado |
+| Ruta predeterminada IPv6 | No configurada |
 
-La máquina virtual utiliza una dirección IPv4 estática y no dispone de una ruta predeterminada.
+La máquina virtual utiliza una dirección IPv4 estática. No tiene configurada una ruta predeterminada IPv4 ni IPv6.
 
-### Validación del aislamiento
+La interfaz se ha declarado opcional en Netplan para evitar que `systemd-networkd-wait-online` espere una conectividad externa que no forma parte del diseño del laboratorio.
 
-Se realizaron pruebas de conectividad desde Ubuntu Server:
+**Nota de seguridad:** la ausencia de rutas predeterminadas y la configuración de la red virtual reducen la conectividad disponible, pero no constituyen por sí solas una auditoría completa de aislamiento del anfitrión y del hipervisor.
 
-- Comunicación con el anfitrión: correcta.
-- Comunicación IPv4 con Internet: no disponible.
-- Comunicación IPv6 con Internet: no disponible.
-- Ruta IPv4 predeterminada: inexistente.
-- Ruta IPv6 predeterminada: inexistente.
-- Dirección IPv6 global: no configurada en la interfaz.
+## 4. Medidas de seguridad
 
-La configuración permite administrar la VM desde el anfitrión sin proporcionarle conectividad externa mediante la configuración actual de la red virtual.
+### 4.1 UFW
 
-## 4. Seguridad del sistema
+Configuración aplicada:
 
-### 4.1 Cortafuegos UFW
-
-Se ha configurado UFW con las siguientes políticas:
-
-- Tráfico entrante: denegado por defecto.
-- Tráfico saliente: permitido.
+- Cortafuegos activo.
+- Política de entrada: deny.
+- Política de salida: allow.
 - Tráfico enrutado: deshabilitado.
-- Registro: activado en nivel bajo.
+- Registro de actividad: low.
 
-Regla de acceso administrativo:
+Regla de acceso SSH:
 
 | Puerto | Protocolo | Origen | Acción |
 |---|---|---|---|
 | 22 | TCP | 192.168.50.1 | ALLOW |
 
-El acceso SSH queda limitado a las conexiones procedentes del anfitrión.
+El acceso administrativo está limitado mediante una regla de entrada desde el anfitrión.
 
-### 4.2 Endurecimiento SSH
+### 4.2 Hardening SSH
 
-Se ha configurado OpenSSH para utilizar autenticación mediante clave pública.
-
-Configuración efectiva verificada:
+Configuración efectiva comprobada:
 
 ```text
 permitrootlogin no
@@ -87,99 +84,144 @@ kbdinteractiveauthentication no
 
 Medidas implementadas:
 
-- Autenticación mediante clave Ed25519.
+- Autenticación mediante clave pública Ed25519.
 - Deshabilitación de autenticación por contraseña.
-- Deshabilitación de autenticación interactiva por teclado.
-- Prohibición del acceso directo de root.
-- Recarga y validación de la configuración SSH.
+- Deshabilitación de autenticación interactiva.
+- Prohibición del acceso SSH directo de root.
+- Validación de la configuración mediante `sshd -t`.
+- Comprobación de parámetros efectivos mediante `sshd -T`.
 
-La conexión desde el anfitrión mediante clave pública se ha probado satisfactoriamente.
+El acceso SSH desde el anfitrión se ha probado satisfactoriamente.
 
 ## 5. Auditoría automatizada
 
-Se ha desarrollado un script de auditoría en Bash para recopilar información del sistema y detectar configuraciones que requieren revisión.
+Se ha desarrollado una colección progresiva de scripts Bash para revisar la configuración del servidor.
 
-### Versiones desarrolladas
+### Evolución
 
-- V1: auditoría inicial del sistema.
-- V2: generación automática de informes.
-- V3: incorporación de comprobaciones adicionales y clasificación de resultados.
-- V4: ampliación de las comprobaciones de seguridad y configuración SSH efectiva.
+| Versión | Mejoras |
+|---|---|
+| V1 | Auditoría inicial del sistema |
+| V2 | Generación automática de informes |
+| V3 | Ampliación de comprobaciones y clasificación |
+| V4 | Revisión de configuración SSH y seguridad |
+| V5 | Mejoras en diagnóstico, gestión de errores y comprobaciones de red |
 
-### Funcionalidades de V4
+### Funcionalidades de V5
 
-- Identificación del sistema y kernel.
+- Identificación del sistema, kernel y arquitectura.
 - Comprobación de memoria y swap.
 - Análisis del espacio en disco.
-- Inspección de interfaces y rutas de red.
-- Estado y configuración de UFW.
-- Identificación de puertos en escucha.
-- Revisión de parámetros efectivos de SSH.
+- Inspección de interfaces y rutas IPv4.
+- Inspección de direcciones y rutas IPv6.
+- Comprobación del estado y las políticas de UFW.
+- Identificación de puertos TCP y UDP en escucha.
+- Verificación de la configuración efectiva de SSH.
 - Detección de cuentas con UID 0.
 - Comprobación de servicios fallidos.
 - Verificación de actualizaciones automáticas.
-- Clasificación de resultados en CRITICAL, WARNING e INFO.
-- Generación automática de informes de auditoría.
+- Clasificación de resultados en CRITICAL, WARNING, INFO y ERROR.
+- Generación de informes con fecha y hora.
+- Protección de los permisos de los informes.
 
-### Último resultado registrado
+### Ejecución
 
-Auditoría V4 ejecutada el 04/11/2026.
+En Ubuntu Server:
+
+```bash
+sudo -v
+~/auditoria-seguridad-v5.sh
+```
+
+Los informes se guardan en:
+
+```text
+~/auditorias/
+```
+
+El script es una herramienta de diagnóstico de solo lectura: recopila información y no aplica cambios en la configuración del servidor.
+
+## 6. Resultados de V5
+
+Última auditoría registrada: **5 de noviembre de 2026**.
 
 | Categoría | Resultado |
 |---|---:|
 | CRITICAL | 0 |
 | WARNING | 2 |
-| INFO | 10 |
+| INFO | 19 |
+| ERROR | 0 |
 
-Los dos avisos corresponden a la escucha de SSH en TCP/22 y a la escucha en todas las interfaces IPv4.
+### Estado de los controles
 
-Se consideran avisos que requieren interpretación contextual, no vulnerabilidades confirmadas. UFW restringe el acceso entrante al anfitrión.
+- UFW activo con política entrante restrictiva.
+- SSH endurecido y autenticación por clave pública.
+- Sin cuentas adicionales con UID 0.
+- Sin servicios fallidos.
+- Actualizaciones automáticas configuradas.
+- Sin ruta predeterminada IPv4.
+- Sin ruta predeterminada IPv6.
+- Sin direcciones IPv6 globales en la interfaz.
 
-## 6. Resultados de seguridad
+Los dos WARNING corresponden a sockets SSH escuchando en direcciones wildcard IPv4 e IPv6. La escucha en todas las interfaces no demuestra por sí sola que el servicio sea accesible desde cualquier origen: debe interpretarse junto con las reglas del cortafuegos y la configuración de red.
 
-Controles implementados y verificados:
+El informe completo se encuentra en `auditorias/`.
 
-- Red virtual independiente.
-- Ausencia de ruta predeterminada en IPv4 e IPv6.
-- Ausencia de conectividad externa en las pruebas realizadas.
-- Comunicación administrativa entre anfitrión y VM.
-- Cortafuegos activo con política restrictiva.
-- Acceso SSH mediante clave pública.
-- Autenticación SSH por contraseña deshabilitada.
-- Acceso directo de root por SSH prohibido.
-- Ausencia de servicios fallidos en la última comprobación.
-- Actualizaciones automáticas activas.
+## 7. Estructura del repositorio
 
-## 7. Tecnologías y herramientas
+```text
+ubuntu-server-security-lab/
+├── README.md
+├── .gitignore
+├── auditorias/
+│   ├── informes históricos
+│   └── auditoria-v5-2026-11-05_10-28-32.txt
+├── configuracion/
+│   ├── lab-aislado.xml
+│   └── scripts/
+│       ├── auditoria-seguridad-v2.sh
+│       ├── auditoria-seguridad-v3.sh
+│       ├── auditoria-seguridad-v4.sh
+│       └── auditoria-seguridad-v5.sh
+├── documentacion/
+└── evidencias/
+    └── sistema/
+        └── configuracion-seguridad.txt
+```
 
-- Zorin OS.
+## 8. Tecnologías utilizadas
+
+- Linux.
 - Ubuntu Server.
+- Zorin OS.
 - KVM/QEMU.
 - libvirt.
 - virt-manager.
+- Bash.
 - OpenSSH.
 - UFW.
-- Bash.
 - systemd.
+- Netplan.
 - iproute2.
-- ss.
 - unattended-upgrades.
+- Git y GitHub.
 
-## 8. Posibles mejoras futuras
+## 9. Limitaciones y mejoras futuras
 
-- Incorporar registros históricos y comparación entre auditorías.
-- Mejorar la clasificación de riesgos y reducir falsos positivos.
-- Añadir comprobaciones de integridad y permisos.
-- Automatizar la ejecución periódica de auditorías.
-- Incorporar monitorización de recursos y servicios.
-- Documentar pruebas adicionales de seguridad de red.
+El laboratorio representa un entorno de aprendizaje y pruebas. No debe considerarse una arquitectura de producción ni una auditoría de seguridad integral.
 
-## 9. Estado del proyecto
+Posibles ampliaciones:
 
-**Fase completada:** despliegue del servidor, configuración de red aislada, endurecimiento SSH, configuración del cortafuegos y auditoría automatizada V4.
+- Análisis contextual de exposición de puertos.
+- Comparación histórica de auditorías.
+- Comprobaciones de integridad y permisos.
+- Monitorización de servicios y recursos.
+- Automatización de auditorías periódicas.
 
-**Fase actual:** documentación técnica y preparación de evidencias para portfolio profesional.
+## 10. Estado del proyecto
 
----
+**Versión estable documentada: V5.**
 
-Proyecto de aprendizaje práctico de administración de sistemas Linux y ciberseguridad.
+Despliegue, configuración de red, hardening SSH, UFW y auditoría automatizada implementados y probados.
+
+Proyecto desarrollado como portfolio práctico de administración de sistemas Linux y ciberseguridad.
